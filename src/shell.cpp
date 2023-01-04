@@ -17,8 +17,8 @@ void Shell::write_to(std::string cmd) {
     const char *ptr = s;
     unsigned length = 0;
     while (*ptr != '\0') {
-	++ptr;
-	++length;
+        ++ptr;
+        ++length;
     }
     // remember newline (line buffering)
     ++length;
@@ -29,27 +29,28 @@ void Shell::write_to(std::string cmd) {
     delete[] buf;
 }
 
-std::vector<struct Word> Shell::read_from() {
+std::vector<struct ParsedText> Shell::read_from() {
     struct timeval tv{0, 0};
     // TODO: ei ole turvallista olettaa koosta mitään -> varaa dynaamisesti
     char buf[4096];
     bzero(buf, sizeof buf);
     ssize_t size;
     size_t count = 0;
-	
+
     FD_ZERO(&(this->rfds));
     FD_SET(this->pty_primary, &(this->rfds));
     if (select(this->pty_primary + 1, &(this->rfds), NULL, NULL, &tv)) {
-	size = read(this->pty_primary, buf, 4096);
-	buf[size] = '\0';
-	count += size;
+        size = read(this->pty_primary, buf, 4096);
+        buf[size] = '\0';
+        count += size;
     }
     else {
-	buf[0] = '\0';
+        buf[0] = '\0';
     }
 
+    Parser psr;
     const std::string out = std::string(buf);
-    std::vector<struct Word> words = parse_output(out);
-	
+    std::vector<struct ParsedText> words = psr.parse_to_words(out);
+
     return words;
 }

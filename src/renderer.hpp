@@ -6,11 +6,12 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <ft2build.h>
+#include <vector>
 #include FT_FREETYPE_H
 
 #include "shader.hpp"
-#include "output_parser.hpp"
 #include "config.hpp"
+#include "parser.hpp"
 
 struct Character {
     unsigned int TextureID;  // ID handle of the glyph texture
@@ -23,7 +24,7 @@ class Renderer {
 public:
     Renderer(Config &cfg);
     ~Renderer();
-    void render_words(Shader &shader, const std::vector<struct Word> &words, float x, float y);
+    void render_words(Shader &shader, const std::vector<struct ParsedText> &words, float x, float y);
     void render_user_text(Shader &shader, const char *text, float x, float y);
 private:
     void render_text(Shader &shader, std::string &text, float x_start, float &x, float &y, float scale, glm::vec3 color);

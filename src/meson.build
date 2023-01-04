@@ -1,6 +1,5 @@
 sources = files('emulator.cpp',
 		'glad.c',
-		'output_parser.cpp',
 		'pty.cpp',
 		'renderer.cpp',
 		'shader.cpp',
@@ -8,4 +7,5 @@ sources = files('emulator.cpp',
 		'termemu.cpp',
 		'text_buffer.cpp',
 		'window.cpp',
-		'config.cpp')
+		'config.cpp',
+        'parser.cpp')

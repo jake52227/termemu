@@ -85,10 +85,13 @@ Renderer::~Renderer() {
 }
 
 // go through the words vector, construct a color vector for each, render the text
-void Renderer::render_words(Shader &shader, const std::vector<struct Word> &words, float x, float y) {
+void Renderer::render_words(Shader &shader, const std::vector<struct ParsedText> &words, float x, float y) {
     float orig_x = x;
-    for (struct Word w : words) {
+    for (struct ParsedText w : words) {
 	this->render_text(shader, w.text, orig_x, x, y, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
+
+	x += PIXEL_SIZE;
+	
 	if (x >= getWindowWidth()) {
 	    x = orig_x;
 	    y -= PIXEL_SIZE;

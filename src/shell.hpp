@@ -3,14 +3,15 @@
 
 #include <string>
 #include <sys/select.h>
-#include "output_parser.hpp"
+#include <vector>
+#include "parser.hpp"
 
 class Shell {
 public:
 	Shell();
 	~Shell();
 	void write_to(std::string msg);
-	std::vector<struct Word> read_from();
+	std::vector<struct ParsedText> read_from();
 private:
 	int pty_primary;
 	int pty_secondary;

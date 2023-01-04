@@ -80,7 +80,7 @@ void Emulator::start() {
 	if (!command.empty())
 	    shell.write_to(command);
 
-	const std::vector<struct Word> words = shell.read_from();
+	const std::vector<struct ParsedText> words = shell.read_from();
 
 	if (words.size() > 0) {
 	    renderer.render_words(shader, words, x, y);
