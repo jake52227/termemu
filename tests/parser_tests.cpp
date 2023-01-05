@@ -2,12 +2,11 @@
 #include <cassert>
 #include <vector>
 #include <string>
-#include "parser.hpp"
+#include "../src/parser.hpp"
 
 #define success(msg) do {std::cout << msg << ": \x1b[32mSuccess\x1b[0m" << std::endl;} while(0);
 
 typedef void (*test_func)(void);
-static std::vector<test_func> TESTS;
 
 void test1() {
     Parser p;
@@ -33,21 +32,22 @@ void test3() {
     success("test3");   
 }
 
-void add_tests() {
-    TESTS.push_back(*test1);
-    TESTS.push_back(*test2);
-    TESTS.push_back(*test3);
+void add_tests(std::vector<test_func> &tests) {
+    tests.push_back(*test1);
+    tests.push_back(*test2);
+    tests.push_back(*test3);
 }
 
 
-void run_tests() {
-    for (int i = 0; i < TESTS.size(); ++i) {
-        TESTS.at(i)();
+void run_tests(const std::vector<test_func> &tests) {
+    for (int i = 0; i < tests.size(); ++i) {
+        tests.at(i)();
     }
 }
 
 
 int main() {
-    add_tests();
-    run_tests(); 
+    std::vector<test_func> tests;
+    add_tests(tests);
+    run_tests(tests); 
 }

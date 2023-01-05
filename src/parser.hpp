@@ -56,8 +56,8 @@ struct ParsedText {
 class Parser {
 public:
     std::vector<struct ParsedText> parse_to_words(const std::string &output);
-private:
     struct ParsedText parse(const std::string &word);    
+private:
     void esc();
     void brack();
     void quest();
