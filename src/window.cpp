@@ -3,6 +3,7 @@
 #include "window.hpp"
 #include "macros.hpp"
 
+// TODO: perhaps not the best solution to have these here?
 static GLFWwindow *WINDOW;
 static unsigned WINDOW_HEIGHT;
 static unsigned WINDOW_WIDTH;

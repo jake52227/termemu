@@ -37,7 +37,7 @@ typedef enum {
     ITALIC,
     UNDERLINE,
     BLINKING
-    // pari muutakin on, mutta näillä pärjää aluksi
+    // TODO: add the rest of the styles 
 } TEXTSTYLE;
 
 

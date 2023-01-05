@@ -18,8 +18,8 @@ ConfigEntry get_entry(std::string &line) {
     getline(ss, key, ':');
     getline(ss, value, ':');
     return (struct ConfigEntry) {
-	key,
-	value
+        key,
+            value
     };
 }
 
@@ -27,17 +27,17 @@ Config::Config() {
     std::string line;
     std::ifstream cfg_file ("src/termemu.config");
     if (cfg_file.is_open()) {
-	while (getline (cfg_file,line)) {
+        while (getline (cfg_file,line)) {
 
-	    struct ConfigEntry cfg = get_entry(line);
-	    if (cfg.key.compare("font") == 0) {
-		this->font_path = cfg.value;
-	    }
-	    
-	}
-	cfg_file.close();
+            struct ConfigEntry cfg = get_entry(line);
+            if (cfg.key.compare("font") == 0) {
+                this->font_path = cfg.value;
+            }
+
+        }
+        cfg_file.close();
     } else {
-	errExit("failed to open configuration file 'termemu.config'");
+        errExit("failed to open configuration file 'termemu.config'");
     }
 }
 

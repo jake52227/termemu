@@ -18,7 +18,7 @@
 #include "window.hpp"
 #include "config.hpp"
 
-// TODO: voidaanko nämä laittaa jonnekin muualle?
+// TODO: this should probably be somewhere else
 static TextBuffer textBuffer;
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
@@ -28,9 +28,9 @@ Emulator::Emulator(unsigned width, unsigned height, const char *title) {
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    // väliaikainen tapa poistua vähemmän väkivaltaisesti:
+    // temporary way to exit more easily without sigkill:
     if (key == GLFW_KEY_ESCAPE) {
-	glfwSetWindowShouldClose(window, true);
+        glfwSetWindowShouldClose(window, true);
     }
     textBuffer.handle_key_event(key, scancode, action, mods);
 }
@@ -54,7 +54,6 @@ void pre_render() {
 
 void Emulator::start() {
     Shader shader = setup_shader();
-    // TODO: fontti jonohkin konfigurointitiedostoon joskus, jotta käyttäjät voivat vaihdella sitä helposti
     Config cfg;
     Renderer renderer = Renderer(cfg);
     Shell shell;
@@ -62,34 +61,34 @@ void Emulator::start() {
 
     float x;
     float y;
-    
+
     while(!glfwWindowShouldClose(win)) {
-	// Wait for something to happen.
-	glfwWaitEvents();
-	
-	x = 10.0f;
-	y = getWindowHeight() - 16;
-	
-	shader.use();
-	setup_projection(shader);
-	pre_render();
+        // Wait for something to happen and don't render needlessly
+        glfwWaitEvents();
 
-	textBuffer.update_state(renderer);
-	std::string command = textBuffer.get_command_if_ready();
-    
-	if (!command.empty())
-	    shell.write_to(command);
+        x = 10.0f;
+        y = getWindowHeight() - 16;
 
-	const std::vector<struct ParsedText> words = shell.read_from();
+        shader.use();
+        setup_projection(shader);
+        pre_render();
 
-	if (words.size() > 0) {
-	    renderer.render_words(shader, words, x, y);
-	} else {
-	    const char *buf = textBuffer.get_buffer();
-	    renderer.render_user_text(shader, buf, x, y);
-	}
+        textBuffer.update_state(renderer);
+        std::string command = textBuffer.get_command_if_ready();
 
-	glfwSwapBuffers(win);
+        if (!command.empty())
+            shell.write_to(command);
+
+        const std::vector<struct ParsedText> words = shell.read_from();
+
+        if (words.size() > 0) {
+            renderer.render_words(shader, words, x, y);
+        } else {
+            const char *buf = textBuffer.get_buffer();
+            renderer.render_user_text(shader, buf, x, y);
+        }
+
+        glfwSwapBuffers(win);
     }
 }
 

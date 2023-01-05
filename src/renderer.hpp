@@ -1,6 +1,10 @@
 #ifndef TEXT_RENDERER_HPP
 #define TEXT_RENDERER_HPP
 
+/*
+    The renderer class and things related to it are mostly copied from here: https://learnopengl.com/In-Practice/Text-Rendering
+*/
+
 #include <glad/glad.h>
 #include <unordered_map>
 #include <string>

@@ -12,7 +12,7 @@ public:
     void update_state(Renderer &renderer);
     void handle_key_event(int key, int scancode, int action, int mods);
     std::string get_command_if_ready();
-    // TODO: kursoriliikkeet
+    // TODO: we need cursor movement as well at some point 
 private:
     int pressed_key;
     char buf[1024];

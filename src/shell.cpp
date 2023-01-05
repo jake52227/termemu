@@ -20,10 +20,10 @@ void Shell::write_to(std::string cmd) {
         ++ptr;
         ++length;
     }
-    // remember newline (line buffering)
     ++length;
     char *buf = new char[length];
     memcpy(buf, s, sizeof(char) * (length-1));
+    // add newline (line buffering)
     buf[length-1] = '\n';
     write(this->pty_primary, buf, sizeof(char) * length);
     delete[] buf;
@@ -31,7 +31,7 @@ void Shell::write_to(std::string cmd) {
 
 std::vector<struct ParsedText> Shell::read_from() {
     struct timeval tv{0, 0};
-    // TODO: ei ole turvallista olettaa koosta mitään -> varaa dynaamisesti
+    // TODO: not safe to assume size of buffer -> change this to dynamic allocation 
     char buf[4096];
     bzero(buf, sizeof buf);
     ssize_t size;

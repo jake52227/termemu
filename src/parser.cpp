@@ -32,17 +32,16 @@ void Parser::quest() {
 }
 
 void Parser::num() {
-    // TODO hoida se kysymysmerkkikoodi tässä             
+    // TODO: handle private codes like \x1b[?24.. 
 }
 
 void Parser::firstNum() {
     char next = this->peek();
     if (next == 'm') {
-        // TODO käsittele koodi tässä
         this->state = CODE_END;
     } else if (next == ';') {
         this->state = SEMI;
-        // TODO yhden numeron koodin käsittely
+        // TODO: handle single number codes 
     } else {
         if (this->current == '3') {
             this->state = FGCOLOR;
@@ -134,7 +133,7 @@ std::vector<std::string> splitBy(const std::string &s, const std::string &delim)
     return split;
 }
    
-// TODO viimeistele parsinta vektoriin.
+// TODO parse the given string to a vector
 std::vector<struct ParsedText> Parser::parse_to_words(const std::string &output) {
     std::vector<struct ParsedText> words;
     const std::vector<std::string> split = splitBy(output, " ");
@@ -149,7 +148,6 @@ struct ParsedText Parser::parse(const std::string &word) {
     this->result.bgColor = BLACK;
     this->result.style = REGULAR; 
     this->result.text = "";
-    // TODO oletukset this->result:lle
     
     this->index = 0;
     for (char c : word) {
