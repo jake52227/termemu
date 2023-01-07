@@ -126,12 +126,9 @@ void Parser::parseCode(struct AnsiCode &code, const std::string::const_iterator 
     this->result.style = REGULAR; 
     this->result.length = 0;
     
-    while (this->it < this->end) {
+    while (this->it < this->end && this->state != DONE) {
         this->current = *(this->it);
-	std::cout << this->current << std::endl;
         this->update();
-	if (this->state == DONE)
-	    break;
 	++this->result.length;
 	++this->it;
     }
