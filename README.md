@@ -15,4 +15,4 @@ The project is made for Linux.
 
 # References
 
-- LearnOpenGL (https://learnopengl.com/Introduction): a great way to learn more about graphics programming. The renderer and shader of this project are heavily influencedby this material.
+- LearnOpenGL (https://learnopengl.com/Introduction): a great way to learn more about graphics programming. The renderer and shader of this project are heavily influenced by this material.
