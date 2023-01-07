@@ -4,19 +4,19 @@
 #include <sstream>
 #include "renderer.hpp"
 #include "window.hpp"
-
-#define check_success(key, msg) do { if (key) {std::cerr << msg << std::endl; exit(1);}  } while(0);
+#include "macros.hpp"
 
 void Renderer::load_chars(const char *font_path) {
     FT_Library ft;
     FT_Face face;
 
-    check_success(FT_Init_FreeType(&ft),
-            "Failed to initialize FreeType Library");
+    if (FT_Init_FreeType(&ft))
+	errExit("Failed to initialize FreeType Library");
 
     std::string font_name = std::string(font_path);
-    check_success(FT_New_Face(ft, font_name.c_str(), 0, &face),
-            "Failed to load font");
+
+    if (FT_New_Face(ft, font_name.c_str(), 0, &face))
+	errExit("Failed to load font");
 
     FT_Set_Pixel_Sizes(face, 0, PIXEL_SIZE);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -84,27 +84,36 @@ Renderer::~Renderer() {
     //
 }
 
-// go through the words vector, construct a color vector for each, render the text
-void Renderer::render_words(Shader &shader, const std::vector<struct ParsedText> &words, float x, float y) {
-    float orig_x = x;
-    for (struct ParsedText w : words) {
-        this->render_text(shader, w.text, orig_x, x, y, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
 
-        x += PIXEL_SIZE;
+void Renderer::render(Shader &shader, Parser &parser, const std::string &text, float x, float y) {
+    struct AnsiCode code;
+    glm::vec3 color = glm::vec3(0.5f, 1.0f, 0.5f);
+    
+    auto it = text.cbegin();
+    const auto end = text.cend();
+    
+    // Iterate the text. Find Ansi codes and extract them to the struct. Modify the rendering style based on this
+    while (it < end) {
+	if (*it == '\x1b') {
+	    parser.parseCode(code, it, end);
+	    it += code.length;
+	    // TODO: update the colors and text style
+	}
+	// find end position for this segment of text: either until next escape code or the end
+	std::string::const_iterator pos(it);
+	while (pos < end && *pos != '\x1b')
+	    ++pos;
 
-        if (x >= getWindowWidth()) {
-            x = orig_x;
-            y -= PIXEL_SIZE;
-        }
+	if (it < pos)
+	    this->render_text(shader, it, pos, x, x, y, 1, color);
+	if (pos == end)
+	    it = end;
+	else
+	    ++it;
     }
 }
 
-void Renderer::render_user_text(Shader &shader, const char *text, float x, float y) {
-    std::string s(text);
-    this->render_text(shader, s, x, x, y, 1.0f, glm::vec3(0.0f, 0.5f, 0.5f));
-}
-
-void Renderer::render_text(Shader &shader, std::string &text, float x_start, float &x, float &y, float scale, glm::vec3 color) {
+void Renderer::render_text(Shader &shader, std::string::const_iterator start, std::string::const_iterator end, float x_start, float &x, float &y, float scale, glm::vec3 color) {
     shader.use();
     glUniform3f(glGetUniformLocation(shader.id, "textColor"), color.x, color.y, color.z);
     glActiveTexture(GL_TEXTURE0);
@@ -114,7 +123,7 @@ void Renderer::render_text(Shader &shader, std::string &text, float x_start, flo
 
     // iterate through all characters
     std::string::const_iterator c;
-    for (c = text.begin(); c != text.end(); c++) {
+    for (c = start; c < end; ++c) {
         Character &ch = symbols[*c];
 
         if (*c == '\n') {

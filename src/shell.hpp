@@ -11,7 +11,7 @@ public:
 	Shell();
 	~Shell();
 	void write_to(std::string msg);
-	std::vector<struct ParsedText> read_from();
+	std::string read_from();
 private:
 	int pty_primary;
 	int pty_secondary;

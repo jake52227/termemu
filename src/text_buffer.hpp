@@ -9,7 +9,7 @@ class TextBuffer {
 public:
     TextBuffer();
     char *get_buffer();
-    void update_state(Renderer &renderer);
+    void update();
     void handle_key_event(int key, int scancode, int action, int mods);
     std::string get_command_if_ready();
     // TODO: we need cursor movement as well at some point 

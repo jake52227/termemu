@@ -28,10 +28,9 @@ class Renderer {
 public:
     Renderer(Config &cfg);
     ~Renderer();
-    void render_words(Shader &shader, const std::vector<struct ParsedText> &words, float x, float y);
-    void render_user_text(Shader &shader, const char *text, float x, float y);
+    void render(Shader &shader, Parser &parser, const std::string &text, float x, float y); 
 private:
-    void render_text(Shader &shader, std::string &text, float x_start, float &x, float &y, float scale, glm::vec3 color);
+    void render_text(Shader &shader, std::string::const_iterator start, std::string::const_iterator end, float x_start, float &x, float &y, float scale, glm::vec3 color);
     unsigned vao;
     unsigned vbo;
     void load_chars(const char *font_path);

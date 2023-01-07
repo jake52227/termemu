@@ -69,7 +69,7 @@ void TextBuffer::handle_key_event(int key) {
     this->pressed_key = -1;
 }
 
-void TextBuffer::update_state(Renderer &renderer) {
+void TextBuffer::update() {
     int key = this->pressed_key;
     if (key == -1)
         return;

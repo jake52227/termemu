@@ -17,6 +17,7 @@
 #include "macros.hpp"
 #include "window.hpp"
 #include "config.hpp"
+#include "parser.hpp"
 
 // TODO: this should probably be somewhere else
 static TextBuffer textBuffer;
@@ -57,6 +58,7 @@ void Emulator::start() {
     Config cfg;
     Renderer renderer = Renderer(cfg);
     Shell shell;
+    Parser parser;
     GLFWwindow *win = getWindow();
 
     float x;
@@ -73,19 +75,20 @@ void Emulator::start() {
         setup_projection(shader);
         pre_render();
 
-        textBuffer.update_state(renderer);
+        textBuffer.update();
         std::string command = textBuffer.get_command_if_ready();
 
         if (!command.empty())
             shell.write_to(command);
 
-        const std::vector<struct ParsedText> words = shell.read_from();
-
-        if (words.size() > 0) {
-            renderer.render_words(shader, words, x, y);
+        const std::string text = shell.read_from();
+	
+        if (!text.empty()) {
+	    std::cout << text << std::endl;
+            renderer.render(shader, parser, text, x, y);
         } else {
-            const char *buf = textBuffer.get_buffer();
-            renderer.render_user_text(shader, buf, x, y);
+            const std::string buf(textBuffer.get_buffer());
+            renderer.render(shader, parser, buf, x, y);
         }
 
         glfwSwapBuffers(win);

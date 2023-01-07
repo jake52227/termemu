@@ -29,7 +29,7 @@ void Shell::write_to(std::string cmd) {
     delete[] buf;
 }
 
-std::vector<struct ParsedText> Shell::read_from() {
+std::string Shell::read_from() {
     struct timeval tv{0, 0};
     // TODO: not safe to assume size of buffer -> change this to dynamic allocation 
     char buf[4096];
@@ -49,8 +49,7 @@ std::vector<struct ParsedText> Shell::read_from() {
     }
 
     Parser psr;
-    const std::string out = std::string(buf);
-    std::vector<struct ParsedText> words = psr.parse_to_words(out);
+    std::string out = std::string(buf);
 
-    return words;
+    return out;
 }

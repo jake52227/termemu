@@ -4,10 +4,10 @@
 #include <sstream>
 #include "parser.hpp"
 
+
 char Parser::peek() {
-    int ln = this->inp.length();
-    if (this->index + 1 < ln) {
-        return this->inp[this->index + 1];
+    if (this->it + 1 < this->end) {
+        return *(this->it + 1);
     }
     return '\0';
 }
@@ -67,7 +67,6 @@ void Parser::background() {
         this->state = SEMI;
     else
         this->state = CODE_END;
-
 }
 
 void Parser::semi() {
@@ -75,18 +74,10 @@ void Parser::semi() {
 }
 
 void Parser::codeEnd() {
-    this->state = TEXT;
+    this->state = DONE;
 }
 
-void Parser::text() {
-    if (this->current == '\x1b') {
-        this->state = ESC;
-    } else {
-        this->result.text += this->current;
-    }
-}
-
-void Parser::updateText() {
+void Parser::update() {
     switch (this->state) {
         case ESC:
             this->esc();
@@ -115,52 +106,38 @@ void Parser::updateText() {
         case CODE_END:
             this->codeEnd();
             break;
-        case TEXT:
-            this->text();
+	default:
+            this->codeEnd();
             break;
     }
 }
 
-std::vector<std::string> splitBy(const std::string &s, const std::string &delim) {
-    std::vector<std::string> split;
-    size_t last = 0; 
-    size_t next = 0;
-    while ((next = s.find(delim, last)) != std::string::npos) {   
-        split.push_back(s.substr(last, next-last)); 
-        last = next + 1;
-    }
-    split.push_back(s.substr(last)); 
-    return split;
-}
-   
-// TODO parse the given string to a vector
-std::vector<struct ParsedText> Parser::parse_to_words(const std::string &output) {
-    std::vector<struct ParsedText> words;
-    const std::vector<std::string> split = splitBy(output, " ");
+// take start and end positions to the string to be parsed. 
+void Parser::parseCode(struct AnsiCode &code, const std::string::const_iterator start, const std::string::const_iterator end) {
+    if (*start != '\x1b')
+	return;
 
-    return words;
-}
-
-struct ParsedText Parser::parse(const std::string &word) {
     this->state = ESC;
-    this->inp = word;
+    this->it = std::string::const_iterator(start);
+    this->end = end;
+
     this->result.fgColor = WHITE;
     this->result.bgColor = BLACK;
     this->result.style = REGULAR; 
-    this->result.text = "";
+    this->result.length = 0;
     
-    this->index = 0;
-    for (char c : word) {
-        this->current = c;
-        this->updateText();
-        this->index += 1;
+    while (this->it < this->end) {
+        this->current = *(this->it);
+	std::cout << this->current << std::endl;
+        this->update();
+	if (this->state == DONE)
+	    break;
+	++this->result.length;
+	++this->it;
     }
 
-    struct ParsedText pt;
-    pt.fgColor = this->result.fgColor;
-    pt.bgColor = this->result.bgColor;
-    pt.style = this->result.style;
-    pt.text = this->result.text;
-
-    return pt;
+    code.fgColor = this->result.fgColor;
+    code.bgColor = this->result.bgColor;
+    code.style = this->result.style;
+    code.length = this->result.length;
 }

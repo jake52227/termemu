@@ -27,7 +27,7 @@ typedef enum {
     BGCOLOR,
     SEMI,
     CODE_END,
-    TEXT,
+    DONE
 } EVENT;
 
 typedef enum {
@@ -46,17 +46,19 @@ typedef enum {
     PRIVATE_CODE
 } CODE_TYPE;
 
-struct ParsedText {
+struct AnsiCode {
     COLOR fgColor;
     COLOR bgColor;
     TEXTSTYLE style;
-    std::string text;
+    unsigned length; // used to update iterator position
+    AnsiCode() : fgColor{WHITE}, bgColor{BLACK}, style{REGULAR}, length{0} {
+	//
+    }
 };
 
 class Parser {
-public:
-    std::vector<struct ParsedText> parse_to_words(const std::string &output);
-    struct ParsedText parse(const std::string &word);    
+public: 
+    void parseCode(struct AnsiCode &code, const std::string::const_iterator start, const std::string::const_iterator end);    
 private:
     void esc();
     void brack();
@@ -71,15 +73,13 @@ private:
 
     CODE_TYPE type;
     int index;
-    std::string inp;
-    struct ParsedText result;
+    std::string::const_iterator it;
+    std::string::const_iterator end; 
+    struct AnsiCode result;
     char current;
     char peek();
-    void updateText();
+    void update();
     EVENT state;
 };
-
-
-
 
 #endif
