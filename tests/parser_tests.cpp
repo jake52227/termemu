@@ -78,12 +78,25 @@ void test5() {
     success("test5");
 }
 
+void test6() {
+    describe("test6", "The length of sequential escape codes should be correct");
+    Parser p;
+    AnsiCode code;
+    std::string text = "\x1b[41;32m\x1b[0mABCDEFG";
+    const auto b = text.cbegin();
+    const auto e = text.cend();
+    p.parseCode(code, b, e);
+    assert(code.length == 12);
+    success("test6");
+}
+
 void add_tests(std::vector<test_func> &tests) {
     tests.push_back(*test1);
     tests.push_back(*test2);
     tests.push_back(*test3);
     tests.push_back(*test4);
     tests.push_back(*test5);
+    tests.push_back(*test6);
 }
 
 void run_tests(const std::vector<test_func> &tests) {
