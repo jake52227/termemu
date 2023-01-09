@@ -11,12 +11,12 @@ void Renderer::load_chars(const char *font_path) {
     FT_Face face;
 
     if (FT_Init_FreeType(&ft))
-	errExit("Failed to initialize FreeType Library");
+	    errExit("Failed to initialize FreeType Library");
 
     std::string font_name = std::string(font_path);
 
     if (FT_New_Face(ft, font_name.c_str(), 0, &face))
-	errExit("Failed to load font");
+	    errExit("Failed to load font");
 
     FT_Set_Pixel_Sizes(face, 0, PIXEL_SIZE);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -88,28 +88,29 @@ Renderer::~Renderer() {
 void Renderer::render(Shader &shader, Parser &parser, const std::string &text, float x, float y) {
     struct AnsiCode code;
     glm::vec3 color = glm::vec3(0.5f, 1.0f, 0.5f);
-    
+    float orig_x = x;
+
     auto it = text.cbegin();
     const auto end = text.cend();
     
     // Iterate the text. Find Ansi codes and extract them to the struct. Modify the rendering style based on this
     while (it < end) {
-	if (*it == '\x1b') {
-	    parser.parseCode(code, it, end);
-	    it += code.length;
-	    // TODO: update the colors and text style
-	}
-	// find end position for this segment of text: either until next escape code or the end
-	std::string::const_iterator pos(it);
-	while (pos < end && *pos != '\x1b')
-	    ++pos;
+        if (*it == '\x1b') {
+            parser.parseCode(code, it, end);
+            it += code.length;
+            // TODO: update the colors and text style
+        }
+        // find end position for this segment of text: either until next escape code or the end
+        std::string::const_iterator pos(it);
+        while (pos < end && *pos != '\x1b')
+            ++pos;
 
-	if (it < pos)
-	    this->render_text(shader, it, pos, x, x, y, 1, color);
-	if (pos == end)
-	    it = end;
-	else
-	    ++it;
+        if (it < pos) {
+            this->render_text(shader, it, pos, orig_x, x, y, 1, color);
+            it = pos;
+        } else {
+            ++it;
+        }
     }
 }
 
@@ -122,8 +123,7 @@ void Renderer::render_text(Shader &shader, std::string::const_iterator start, st
     // TODO: buffer the renderings and do only a single rendering at the end
 
     // iterate through all characters
-    std::string::const_iterator c;
-    for (c = start; c < end; ++c) {
+    for (auto c = start; c < end; ++c) {
         Character &ch = symbols[*c];
 
         if (*c == '\n') {

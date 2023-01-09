@@ -52,7 +52,7 @@ struct AnsiCode {
     TEXTSTYLE style;
     unsigned length; // used to update iterator position
     AnsiCode() : fgColor{WHITE}, bgColor{BLACK}, style{REGULAR}, length{0} {
-	//
+	    //
     }
 };
 
@@ -69,7 +69,6 @@ private:
     void background();
     void semi();
     void codeEnd();
-    void text();
 
     CODE_TYPE type;
     int index;

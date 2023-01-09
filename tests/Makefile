@@ -10,6 +10,3 @@ parser_tests.o: parser_tests.cpp
 
 parser.o: ../src/parser.cpp
 	$(CC) -c ../src/parser.cpp
-
-clean:
-	-rm *.o $(OBJS)

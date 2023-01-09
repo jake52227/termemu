@@ -32,7 +32,13 @@ void Parser::quest() {
 }
 
 void Parser::num() {
-    // TODO: handle private codes like \x1b[?24.. 
+    // TODO: store the read chars somewhere. For now we just iterate through
+    char next = this->peek();
+    if (next == 'h' || next == 'l') {
+        this->state = CODE_END;
+    } else {
+        this->state = NUM;
+    }
 }
 
 void Parser::firstNum() {
@@ -106,16 +112,16 @@ void Parser::update() {
         case CODE_END:
             this->codeEnd();
             break;
-	default:
+	    default:
             this->codeEnd();
             break;
     }
 }
 
-// take start and end positions to the string to be parsed. 
+// take start and end positions to the string to be parsed. Collect information about the encountered ANSI escape sequence to the given struct
 void Parser::parseCode(struct AnsiCode &code, const std::string::const_iterator start, const std::string::const_iterator end) {
     if (*start != '\x1b')
-	return;
+	    return;
 
     this->state = ESC;
     this->it = std::string::const_iterator(start);
@@ -129,8 +135,8 @@ void Parser::parseCode(struct AnsiCode &code, const std::string::const_iterator 
     while (this->it < this->end && this->state != DONE) {
         this->current = *(this->it);
         this->update();
-	++this->result.length;
-	++this->it;
+	    ++this->result.length;
+	    ++this->it;
     }
 
     code.fgColor = this->result.fgColor;

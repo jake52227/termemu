@@ -66,16 +66,29 @@ void test4() {
     success("test4");
 }
 
+void test5() {
+    describe("test5", "Parsed private mode code should be the correct length");
+    Parser p;
+    AnsiCode code;
+    std::string text = "\x1b[?2004hABCD";
+    const auto b = text.cbegin();
+    const auto e = text.cend();
+    p.parseCode(code, b, e);
+    assert(code.length == 8);
+    success("test5");
+}
+
 void add_tests(std::vector<test_func> &tests) {
     tests.push_back(*test1);
     tests.push_back(*test2);
     tests.push_back(*test3);
     tests.push_back(*test4);
+    tests.push_back(*test5);
 }
 
 void run_tests(const std::vector<test_func> &tests) {
     for (int i = 0; i < tests.size(); ++i) {
-	tests.at(i)();
+	    tests.at(i)();
     }
 }
 
