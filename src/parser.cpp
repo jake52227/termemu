@@ -80,7 +80,13 @@ void Parser::semi() {
 }
 
 void Parser::codeEnd() {
-    this->state = DONE;
+    // check if the code continues still:
+    char next = this->peek();
+    if (next == '\x1b') {
+        this->state = ESC;
+    } else {
+        this->state = DONE;
+    }
 }
 
 void Parser::update() {
