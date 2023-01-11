@@ -12,7 +12,7 @@
 #include <sys/wait.h>
 #include "emulator.hpp"
 #include "renderer.hpp"
-#include "text_buffer.hpp"
+#include "user_input.hpp"
 #include "shell.hpp"
 #include "macros.hpp"
 #include "window.hpp"
@@ -20,7 +20,7 @@
 #include "parser.hpp"
 
 // TODO: this should probably be somewhere else
-static TextBuffer textBuffer;
+static UserInput inputBuffer;
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 Emulator::Emulator(unsigned width, unsigned height, const char *title) {
@@ -33,7 +33,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     if (key == GLFW_KEY_ESCAPE) {
         glfwSetWindowShouldClose(window, true);
     }
-    textBuffer.handle_key_event(key, scancode, action, mods);
+    inputBuffer.handle_key_event(key, scancode, action, mods);
 }
 
 Shader setup_shader() {
@@ -75,8 +75,8 @@ void Emulator::start() {
         setup_projection(shader);
         pre_render();
 
-        textBuffer.update();
-        std::string command = textBuffer.get_command_if_ready();
+        inputBuffer.update();
+        std::string command = inputBuffer.get_command_if_ready();
 
         if (!command.empty())
             shell.write_to(command);
@@ -86,7 +86,7 @@ void Emulator::start() {
         if (!text.empty()) {
             renderer.render(shader, parser, text, x, y);
         } else {
-            const std::string buf(textBuffer.get_buffer());
+            const std::string buf(inputBuffer.get_buffer());
             renderer.render(shader, parser, buf, x, y);
         }
 

@@ -5,9 +5,9 @@
 #include "renderer.hpp"
 
 
-class TextBuffer {
+class UserInput {
 public:
-    TextBuffer();
+    UserInput();
     char *get_buffer();
     void update();
     void handle_key_event(int key, int scancode, int action, int mods);

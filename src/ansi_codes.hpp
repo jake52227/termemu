@@ -16,19 +16,6 @@ typedef enum {
 } COLOR;
 
 typedef enum {
-    ESC,
-    BRACK,
-    QUESTION_MARK,
-    NUM,
-    FIRST_NUM,
-    FGCOLOR,
-    BGCOLOR,
-    SEMI,
-    CODE_END,
-    DONE
-} EVENT;
-
-typedef enum {
     REGULAR = 0,
     BOLD,
     DIM,
@@ -47,7 +34,7 @@ struct AnsiCode {
     COLOR fgColor;
     COLOR bgColor;
     TEXTSTYLE style;
-    unsigned length;
+    unsigned length; // the length of the escape sequence
     AnsiCode() : fgColor{WHITE}, bgColor{BLACK}, style{REGULAR}, length{0} {
 	    //
     }

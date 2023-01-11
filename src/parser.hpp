@@ -4,6 +4,20 @@
 #include <vector>
 #include <string>
 #include "ansi_codes.hpp"
+
+typedef enum {
+    ESC,
+    BRACK,
+    QUESTION_MARK,
+    NUM,
+    FIRST_NUM,
+    FGCOLOR,
+    BGCOLOR,
+    SEMI,
+    CODE_END,
+    DONE
+} EVENT;
+
 class Parser {
 public: 
     void parseCode(struct AnsiCode &code, const std::string::const_iterator start, const std::string::const_iterator end);    

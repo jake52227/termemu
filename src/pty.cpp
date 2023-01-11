@@ -35,12 +35,11 @@ void fork_pty_shell(int *pty_primary, int *shell_process_id) {
     // Im not sure if this even does anything but i'll keep it here for now 
     unsigned short ws_row = getWindowWidth() / PIXEL_SIZE; // rows in characters
     unsigned short ws_col = getWindowHeight() / PIXEL_SIZE; // columns in characters
-    struct winsize winp = (struct winsize) {
-        ws_row,
-            ws_col,
-            0, // ws_xpixel is not used
-            0  // ws_ypixel is not used either
-    };
+    struct winsize winp;
+    winp.ws_row = ws_row;
+    winp.ws_col = ws_col;
+    winp.ws_xpixel = 0; // not used
+    winp.ws_ypixel = 0; // not used either
 
     int rc = forkpty(pty_primary, pty_secondary_name, NULL, &winp);
     if (rc < 0) {

@@ -86,7 +86,7 @@ Renderer::~Renderer() {
 
 void Renderer::render(Shader &shader, Parser &parser, const std::string &text, float x, float y) {
     struct AnsiCode code;
-    glm::vec3 color = glm::vec3(0.5f, 1.0f, 0.5f);
+    glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
     float orig_x = x;
 
     auto it = text.cbegin();
