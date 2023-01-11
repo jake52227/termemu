@@ -84,7 +84,6 @@ void Emulator::start() {
         const std::string text = shell.read_from();
 	
         if (!text.empty()) {
-	    std::cout << text << std::endl;
             renderer.render(shader, parser, text, x, y);
         } else {
             const std::string buf(textBuffer.get_buffer());

@@ -8,4 +8,5 @@ sources = files('emulator.cpp',
 		'text_buffer.cpp',
 		'window.cpp',
 		'config.cpp',
-        'parser.cpp')
+        'parser.cpp',
+		'ansi_codes.cpp')

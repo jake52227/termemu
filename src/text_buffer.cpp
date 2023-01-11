@@ -21,6 +21,9 @@ void TextBuffer::handle_regular_char_event(int key, int mods) {
             this->set_pressed_key(key + 32);
         }
     }
+    else {
+        this->set_pressed_key(key);
+    }
 }
 
 

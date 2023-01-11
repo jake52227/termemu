@@ -84,7 +84,6 @@ Renderer::~Renderer() {
     //
 }
 
-
 void Renderer::render(Shader &shader, Parser &parser, const std::string &text, float x, float y) {
     struct AnsiCode code;
     glm::vec3 color = glm::vec3(0.5f, 1.0f, 0.5f);
@@ -98,7 +97,8 @@ void Renderer::render(Shader &shader, Parser &parser, const std::string &text, f
         if (*it == '\x1b') {
             parser.parseCode(code, it, end);
             it += code.length;
-            // TODO: update the colors and text style
+            color = get_color_as_vec(code.fgColor);
+            // TODO update text style (bold, italic etc)
         }
         // find end position for this segment of text: either until next escape code or the end
         std::string::const_iterator pos(it);

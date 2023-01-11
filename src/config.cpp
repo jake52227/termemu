@@ -19,7 +19,7 @@ ConfigEntry get_entry(std::string &line) {
     getline(ss, value, ':');
     return (struct ConfigEntry) {
         key,
-            value
+        value
     };
 }
 
