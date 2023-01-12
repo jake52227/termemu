@@ -21,22 +21,39 @@
 
 // TODO: this should probably be somewhere else
 static UserInput inputBuffer;
-static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
+static void char_callback(GLFWwindow *window, unsigned codepoint);
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 Emulator::Emulator(unsigned width, unsigned height, const char *title)
 {
     make_window(width, height, title);
+    glfwSetCharCallback(getWindow(), char_callback);
     glfwSetKeyCallback(getWindow(), key_callback);
 }
 
-static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    // temporary way to exit more easily without sigkill:
-    if (key == GLFW_KEY_ESCAPE)
+    if (action == GLFW_PRESS)
     {
-        glfwSetWindowShouldClose(window, true);
+        
+        if (key == GLFW_KEY_ENTER)
+        {
+            inputBuffer.prepare_command();
+        }
+        else if (key == GLFW_KEY_BACKSPACE)
+        {
+            inputBuffer.erase_symbol();
+        }
+        else if (key == GLFW_KEY_ESCAPE)
+        {
+            glfwSetWindowShouldClose(window, true);
+        }
     }
-    inputBuffer.handle_key_event(key, scancode, action, mods);
+}
+
+static void char_callback(GLFWwindow *window, unsigned codepoint)
+{
+    inputBuffer.write_symbol((char)codepoint);
 }
 
 Shader setup_shader()
@@ -83,11 +100,11 @@ void Emulator::start()
         setup_projection(shader);
         pre_render();
 
-        inputBuffer.update();
-        std::string command = inputBuffer.get_command_if_ready();
-
-        if (!command.empty())
+        if (inputBuffer.is_command_ready())
+        {
+            std::string command = inputBuffer.get_command();
             shell.write_to(command);
+        }
 
         const std::string text = shell.read_from();
 
