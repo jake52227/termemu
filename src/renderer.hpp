@@ -17,18 +17,21 @@
 #include "config.hpp"
 #include "parser.hpp"
 
-struct Character {
-    unsigned int TextureID;  // ID handle of the glyph texture
-    glm::ivec2   Size;       // Size of glyph
-    glm::ivec2   Bearing;    // Offset from baseline to left/top of glyph
-    unsigned int Advance;    // Offset to advance to next glyph
+struct Character
+{
+    unsigned int TextureID; // ID handle of the glyph texture
+    glm::ivec2 Size;        // Size of glyph
+    glm::ivec2 Bearing;     // Offset from baseline to left/top of glyph
+    unsigned int Advance;   // Offset to advance to next glyph
 };
 
-class Renderer {
+class Renderer
+{
 public:
     Renderer(Config &cfg);
     ~Renderer();
-    void render(Shader &shader, Parser &parser, const std::string &text, float x, float y); 
+    void render(Shader &shader, Parser &parser, const std::string &text, float x, float y);
+
 private:
     void render_text(Shader &shader, std::string::const_iterator start, std::string::const_iterator end, float x_start, float &x, float &y, float scale, glm::vec3 color);
     unsigned vao;

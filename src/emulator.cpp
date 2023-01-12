@@ -21,39 +21,46 @@
 
 // TODO: this should probably be somewhere else
 static UserInput inputBuffer;
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 
-Emulator::Emulator(unsigned width, unsigned height, const char *title) {
+Emulator::Emulator(unsigned width, unsigned height, const char *title)
+{
     make_window(width, height, title);
     glfwSetKeyCallback(getWindow(), key_callback);
 }
 
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
+{
     // temporary way to exit more easily without sigkill:
-    if (key == GLFW_KEY_ESCAPE) {
+    if (key == GLFW_KEY_ESCAPE)
+    {
         glfwSetWindowShouldClose(window, true);
     }
     inputBuffer.handle_key_event(key, scancode, action, mods);
 }
 
-Shader setup_shader() {
+Shader setup_shader()
+{
     Shader shader;
     shader.compile("src/shaders/vertex.glsl", "src/shaders/fragment.glsl");
     return shader;
 }
 
-void setup_projection(Shader &shader) {
+void setup_projection(Shader &shader)
+{
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(getWindowWidth()), 0.0f, static_cast<float>(getWindowHeight()));
     glUniformMatrix4fv(glGetUniformLocation(shader.id, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 }
 
-void pre_render() {
+void pre_render()
+{
     glfwPollEvents();
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void Emulator::start() {
+void Emulator::start()
+{
     Shader shader = setup_shader();
     Config cfg;
     Renderer renderer = Renderer(cfg);
@@ -64,12 +71,13 @@ void Emulator::start() {
     float x;
     float y;
 
-    while(!glfwWindowShouldClose(win)) {
+    while (!glfwWindowShouldClose(win))
+    {
         // Wait for something to happen and don't render needlessly
         glfwWaitEvents();
 
         x = 10.0f;
-        y = getWindowHeight() - 16;
+        y = getWindowHeight() - PIXEL_SIZE;
 
         shader.use();
         setup_projection(shader);
@@ -82,10 +90,13 @@ void Emulator::start() {
             shell.write_to(command);
 
         const std::string text = shell.read_from();
-	
-        if (!text.empty()) {
+
+        if (!text.empty())
+        {
             renderer.render(shader, parser, text, x, y);
-        } else {
+        }
+        else
+        {
             const std::string buf(inputBuffer.get_buffer());
             renderer.render(shader, parser, buf, x, y);
         }
@@ -94,6 +105,7 @@ void Emulator::start() {
     }
 }
 
-Emulator::~Emulator() {
+Emulator::~Emulator()
+{
     glfwTerminate();
 }

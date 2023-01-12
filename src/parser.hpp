@@ -5,7 +5,8 @@
 #include <string>
 #include "ansi_codes.hpp"
 
-typedef enum {
+typedef enum
+{
     ESC,
     BRACK,
     QUESTION_MARK,
@@ -18,9 +19,11 @@ typedef enum {
     DONE
 } EVENT;
 
-class Parser {
-public: 
-    void parseCode(struct AnsiCode &code, const std::string::const_iterator start, const std::string::const_iterator end);    
+class Parser
+{
+public:
+    void parseCode(struct AnsiCode &code, const std::string::const_iterator start, const std::string::const_iterator end);
+
 private:
     void esc();
     void brack();
@@ -35,13 +38,12 @@ private:
     CODE_TYPE type;
     int index;
     std::string::const_iterator it;
-    std::string::const_iterator end; 
+    std::string::const_iterator end;
     struct AnsiCode result;
     char current;
     char peek();
     void update();
     EVENT state;
 };
-
 
 #endif

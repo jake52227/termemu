@@ -10,6 +10,6 @@ unsigned getWindowHeight();
 unsigned getWindowWidth();
 GLFWwindow *getWindow();
 void make_window(unsigned width, unsigned height, const char *title);
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 #endif

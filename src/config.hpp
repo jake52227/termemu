@@ -3,12 +3,14 @@
 
 #include <string>
 
-class Config {
+class Config
+{
 public:
     Config();
     std::string get_font_path();
+
 private:
-    std::string font_path;
+    std::string font_path {};
 };
 
 #endif

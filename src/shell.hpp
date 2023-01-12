@@ -6,12 +6,14 @@
 #include <vector>
 #include "parser.hpp"
 
-class Shell {
+class Shell
+{
 public:
 	Shell();
 	~Shell();
 	void write_to(std::string msg);
 	std::string read_from();
+
 private:
 	int pty_primary;
 	int pty_secondary;

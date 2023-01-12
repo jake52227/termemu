@@ -4,60 +4,81 @@
 #include <sstream>
 #include "parser.hpp"
 
-
-char Parser::peek() {
-    if (this->it + 1 < this->end) {
+char Parser::peek()
+{
+    if (this->it + 1 < this->end)
+    {
         return *(this->it + 1);
     }
     return '\0';
 }
 
-void Parser::esc() {
+void Parser::esc()
+{
     this->state = BRACK;
 }
 
-void Parser::brack() {
+void Parser::brack()
+{
     char next = this->peek();
-    if (next == '?') {
+    if (next == '?')
+    {
         this->type = PRIVATE_CODE;
         this->state = QUESTION_MARK;
-    } else {
+    }
+    else
+    {
         this->type = COLOR_CODE;
         this->state = FIRST_NUM;
     }
 }
 
-void Parser::quest() {
+void Parser::quest()
+{
     this->state = NUM;
 }
 
-void Parser::num() {
+void Parser::num()
+{
     // TODO: store the read chars somewhere. For now we just iterate through
     char next = this->peek();
-    if (next == 'h' || next == 'l') {
+    if (next == 'h' || next == 'l')
+    {
         this->state = CODE_END;
-    } else {
+    }
+    else
+    {
         this->state = NUM;
     }
 }
 
-void Parser::firstNum() {
+void Parser::firstNum()
+{
     char next = this->peek();
-    if (next == 'm') {
+    if (next == 'm')
+    {
         this->state = CODE_END;
-    } else if (next == ';') {
+    }
+    else if (next == ';')
+    {
         this->state = SEMI;
-        // TODO: handle single number codes 
-    } else {
-        if (this->current == '3') {
+        // TODO: handle single number codes
+    }
+    else
+    {
+        if (this->current == '3')
+        {
             this->state = FGCOLOR;
-        } else {
-            this->state = BGCOLOR; 
+        }
+        else
+        {
+            this->state = BGCOLOR;
         }
     }
 }
 
-void Parser::foreground() {
+void Parser::foreground()
+{
     char next = this->peek();
     this->result.fgColor = COLOR(this->current - '0');
     if (next == ';')
@@ -66,7 +87,8 @@ void Parser::foreground() {
         this->state = CODE_END;
 }
 
-void Parser::background() {
+void Parser::background()
+{
     char next = this->peek();
     this->result.bgColor = COLOR(this->current - '0');
     if (next == ';')
@@ -75,59 +97,67 @@ void Parser::background() {
         this->state = CODE_END;
 }
 
-void Parser::semi() {
+void Parser::semi()
+{
     this->state = FIRST_NUM;
 }
 
-void Parser::codeEnd() {
+void Parser::codeEnd()
+{
     // check if the code continues still:
     char next = this->peek();
-    if (next == '\x1b') {
+    if (next == '\x1b')
+    {
         this->state = ESC;
-    } else {
+    }
+    else
+    {
         this->state = DONE;
     }
 }
 
-void Parser::update() {
-    switch (this->state) {
-        case ESC:
-            this->esc();
-            break;
-        case BRACK:
-            this->brack();
-            break;
-        case QUESTION_MARK:
-            this->quest();
-            break;
-        case NUM:
-            this->num();
-            break;
-        case FIRST_NUM:
-            this->firstNum();
-            break;
-        case FGCOLOR:
-            this->foreground();
-            break;
-        case BGCOLOR:
-            this->background();
-            break;
-        case SEMI:
-            this->semi();
-            break;
-        case CODE_END:
-            this->codeEnd();
-            break;
-	    default:
-            this->codeEnd();
-            break;
+void Parser::update()
+{
+    switch (this->state)
+    {
+    case ESC:
+        this->esc();
+        break;
+    case BRACK:
+        this->brack();
+        break;
+    case QUESTION_MARK:
+        this->quest();
+        break;
+    case NUM:
+        this->num();
+        break;
+    case FIRST_NUM:
+        this->firstNum();
+        break;
+    case FGCOLOR:
+        this->foreground();
+        break;
+    case BGCOLOR:
+        this->background();
+        break;
+    case SEMI:
+        this->semi();
+        break;
+    case CODE_END:
+        this->codeEnd();
+        break;
+    default:
+        this->codeEnd();
+        break;
     }
 }
 
 // take start and end positions to the string to be parsed. Collect information about the encountered ANSI escape sequence to the given struct
-void Parser::parseCode(struct AnsiCode &code, const std::string::const_iterator start, const std::string::const_iterator end) {
+void Parser::parseCode(struct AnsiCode &code, const std::string::const_iterator start, const std::string::const_iterator end)
+{
     if (*start != '\x1b')
-	    return;
+        return;
 
     this->state = ESC;
     this->it = std::string::const_iterator(start);
@@ -135,14 +165,15 @@ void Parser::parseCode(struct AnsiCode &code, const std::string::const_iterator 
 
     this->result.fgColor = WHITE;
     this->result.bgColor = BLACK;
-    this->result.style = REGULAR; 
+    this->result.style = REGULAR;
     this->result.length = 0;
-    
-    while (this->it < this->end && this->state != DONE) {
+
+    while (this->it < this->end && this->state != DONE)
+    {
         this->current = *(this->it);
         this->update();
-	    ++this->result.length;
-	    ++this->it;
+        ++this->result.length;
+        ++this->it;
     }
 
     code.fgColor = this->result.fgColor;

@@ -8,17 +8,22 @@
 #define TESTBLUE "\x1b[34m"
 #define TESTRESET "\x1b[0m"
 
-#define describe(testname, msg) do { \
-	std::cout << TESTBLUE << testname << TESTRESET << ": " << msg << std::endl; \
-} while (0);
+#define describe(testname, msg)                                                     \
+    do                                                                              \
+    {                                                                               \
+        std::cout << TESTBLUE << testname << TESTRESET << ": " << msg << std::endl; \
+    } while (0);
 
-#define success(testname) do { \
-    std::cout << TESTBLUE << testname << TESTRESET << TESTGREEN << ": Success" << TESTRESET << std::endl; \
-} while(0);
+#define success(testname)                                                                                     \
+    do                                                                                                        \
+    {                                                                                                         \
+        std::cout << TESTBLUE << testname << TESTRESET << TESTGREEN << ": Success" << TESTRESET << std::endl; \
+    } while (0);
 
 typedef void (*test_func)(void);
 
-void test1() {
+void test1()
+{
     describe("test1", "code length should equal 4");
     Parser p;
     AnsiCode code;
@@ -30,7 +35,8 @@ void test1() {
     success("test1");
 }
 
-void test2() {
+void test2()
+{
     describe("test2", "Foreground color should be green");
     Parser p;
     AnsiCode code;
@@ -42,7 +48,8 @@ void test2() {
     success("test2");
 }
 
-void test3() {
+void test3()
+{
     describe("test3", "Background color should be red");
     Parser p;
     AnsiCode code;
@@ -54,7 +61,8 @@ void test3() {
     success("test3");
 }
 
-void test4() {
+void test4()
+{
     describe("test4", "Background color should be red and foreground color should be green");
     Parser p;
     AnsiCode code;
@@ -66,7 +74,8 @@ void test4() {
     success("test4");
 }
 
-void test5() {
+void test5()
+{
     describe("test5", "Parsed private mode code should be the correct length");
     Parser p;
     AnsiCode code;
@@ -78,7 +87,8 @@ void test5() {
     success("test5");
 }
 
-void test6() {
+void test6()
+{
     describe("test6", "The length of sequential escape codes should be correct");
     Parser p;
     AnsiCode code;
@@ -90,7 +100,8 @@ void test6() {
     success("test6");
 }
 
-void add_tests(std::vector<test_func> &tests) {
+void add_tests(std::vector<test_func> &tests)
+{
     tests.push_back(*test1);
     tests.push_back(*test2);
     tests.push_back(*test3);
@@ -99,15 +110,17 @@ void add_tests(std::vector<test_func> &tests) {
     tests.push_back(*test6);
 }
 
-void run_tests(const std::vector<test_func> &tests) {
-    for (int i = 0; i < tests.size(); ++i) {
-	    tests.at(i)();
+void run_tests(const std::vector<test_func> &tests)
+{
+    for (int i = 0; i < tests.size(); ++i)
+    {
+        tests.at(i)();
     }
 }
 
-
-int main() {
+int main()
+{
     std::vector<test_func> tests;
     add_tests(tests);
-    run_tests(tests); 
+    run_tests(tests);
 }

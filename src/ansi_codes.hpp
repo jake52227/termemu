@@ -3,7 +3,8 @@
 
 #include <glm/glm.hpp>
 
-typedef enum {
+typedef enum
+{
     BLACK = 0,
     RED,
     GREEN,
@@ -15,28 +16,32 @@ typedef enum {
     DEFAULT
 } COLOR;
 
-typedef enum {
+typedef enum
+{
     REGULAR = 0,
     BOLD,
     DIM,
     ITALIC,
     UNDERLINE,
     BLINKING
-    // TODO: add the rest of the styles 
+    // TODO: add the rest of the styles
 } TEXTSTYLE;
 
-typedef enum {
+typedef enum
+{
     COLOR_CODE,
     PRIVATE_CODE
 } CODE_TYPE;
 
-struct AnsiCode {
+struct AnsiCode
+{
     COLOR fgColor;
     COLOR bgColor;
     TEXTSTYLE style;
     unsigned length; // the length of the escape sequence
-    AnsiCode() : fgColor{WHITE}, bgColor{BLACK}, style{REGULAR}, length{0} {
-	    //
+    AnsiCode() : fgColor{WHITE}, bgColor{BLACK}, style{REGULAR}, length{0}
+    {
+        //
     }
 };
 
