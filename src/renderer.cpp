@@ -89,11 +89,10 @@ Renderer::~Renderer()
     //
 }
 
-void Renderer::render(Shader &shader, Parser &parser, const std::string &text, float x, float y)
+void Renderer::render(Shader &shader, Parser &parser, const std::string &text, DrawPos &drawPos)
 {
     struct AnsiCode code;
     glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
-    float orig_x = x;
 
     auto it = text.cbegin();
     const auto end = text.cend();
@@ -115,7 +114,7 @@ void Renderer::render(Shader &shader, Parser &parser, const std::string &text, f
 
         if (it < pos)
         {
-            this->render_text(shader, it, pos, orig_x, x, y, 1, color);
+            this->render_text(shader, it, pos, drawPos, 1, color);
             it = pos;
         }
         else
@@ -125,7 +124,7 @@ void Renderer::render(Shader &shader, Parser &parser, const std::string &text, f
     }
 }
 
-void Renderer::render_text(Shader &shader, std::string::const_iterator start, std::string::const_iterator end, float x_start, float &x, float &y, float scale, glm::vec3 color)
+void Renderer::render_text(Shader &shader, std::string::const_iterator start, std::string::const_iterator end, DrawPos &drawPos, float scale, glm::vec3 color)
 {
     shader.use();
     glUniform3f(glGetUniformLocation(shader.id, "textColor"), color.x, color.y, color.z);
@@ -140,10 +139,11 @@ void Renderer::render_text(Shader &shader, std::string::const_iterator start, st
         Character &ch = symbols[*c];
 
         if (*c == '\n')
-        {
-            y -= 1.5 * PIXEL_SIZE;
-            x = x_start;
-        }
+            drawPos.changeRow(false);
+
+        float x = drawPos.getX();
+        float y = drawPos.getY();
+        drawPos.updatePos((ch.Advance >> 6) * scale);
 
         float xpos = x + ch.Bearing.x * scale;
         float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
@@ -166,7 +166,6 @@ void Renderer::render_text(Shader &shader, std::string::const_iterator start, st
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glDrawArrays(GL_TRIANGLES, 0, 6);
-        x += (ch.Advance >> 6) * scale;
     }
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);

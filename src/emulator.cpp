@@ -18,9 +18,11 @@
 #include "window.hpp"
 #include "config.hpp"
 #include "parser.hpp"
+#include "text_container.hpp"
+#include "draw_position.hpp"
 
 // TODO: this should probably be somewhere else
-static UserInput inputBuffer;
+static UserInput userInputBuffer;
 static void char_callback(GLFWwindow *window, unsigned codepoint);
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
@@ -38,11 +40,11 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         
         if (key == GLFW_KEY_ENTER)
         {
-            inputBuffer.prepare_command();
+            userInputBuffer.prepare_command();
         }
         else if (key == GLFW_KEY_BACKSPACE)
         {
-            inputBuffer.erase_symbol();
+            userInputBuffer.erase_symbol();
         }
         else if (key == GLFW_KEY_ESCAPE)
         {
@@ -53,7 +55,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 static void char_callback(GLFWwindow *window, unsigned codepoint)
 {
-    inputBuffer.write_symbol((char)codepoint);
+    userInputBuffer.write_symbol((char)codepoint);
 }
 
 Shader setup_shader()
@@ -83,26 +85,23 @@ void Emulator::start()
     Renderer renderer = Renderer(cfg);
     Shell shell;
     Parser parser;
+    TextContainer textContainer;
     GLFWwindow *win = getWindow();
-
-    float x;
-    float y;
+    DrawPos drawingPos(10.0f, getWindowHeight() - PIXEL_SIZE, getWindowWidth(), PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE);
 
     while (!glfwWindowShouldClose(win))
     {
         // Wait for something to happen and don't render needlessly
         glfwWaitEvents();
 
-        x = 10.0f;
-        y = getWindowHeight() - PIXEL_SIZE;
-
         shader.use();
         setup_projection(shader);
         pre_render();
 
-        if (inputBuffer.is_command_ready())
+        if (userInputBuffer.is_command_ready())
         {
-            std::string command = inputBuffer.get_command();
+            std::string command = userInputBuffer.get_command();
+            textContainer.store(command);
             shell.write_to(command);
         }
 
@@ -110,12 +109,14 @@ void Emulator::start()
 
         if (!text.empty())
         {
-            renderer.render(shader, parser, text, x, y);
+            textContainer.store(text);
+            renderer.render(shader, parser, text, drawingPos);
         }
         else
         {
-            const std::string buf(inputBuffer.get_buffer());
-            renderer.render(shader, parser, buf, x, y);
+            const std::string buf(userInputBuffer.get_buffer());
+            renderer.render(shader, parser, buf, drawingPos);
+            drawingPos.resetX();
         }
 
         glfwSwapBuffers(win);

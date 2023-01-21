@@ -16,6 +16,7 @@
 #include "shader.hpp"
 #include "config.hpp"
 #include "parser.hpp"
+#include "draw_position.hpp"
 
 struct Character
 {
@@ -30,10 +31,10 @@ class Renderer
 public:
     Renderer(Config &cfg);
     ~Renderer();
-    void render(Shader &shader, Parser &parser, const std::string &text, float x, float y);
+    void render(Shader &shader, Parser &parser, const std::string &text, DrawPos &drawPos);
 
 private:
-    void render_text(Shader &shader, std::string::const_iterator start, std::string::const_iterator end, float x_start, float &x, float &y, float scale, glm::vec3 color);
+    void render_text(Shader &shader, std::string::const_iterator start, std::string::const_iterator end, DrawPos &drawPos, float scale, glm::vec3 color);
     unsigned vao;
     unsigned vbo;
     void load_chars(const char *font_path);
