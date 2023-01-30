@@ -9,7 +9,7 @@
 class TextContainer
 {
 public:
-    TextContainer(unsigned maximumCapacity);
+    TextContainer(unsigned maximumCapacity = 200);
     void store(const std::string text);
     void removeLast();
     unsigned getCount();

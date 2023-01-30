@@ -1,4 +1,5 @@
 #include "text_container.hpp"
+#include "utility.hpp"
 
 TextContainer::TextContainer(unsigned maximumCapacity)
 {
@@ -7,19 +8,26 @@ TextContainer::TextContainer(unsigned maximumCapacity)
     this->container = std::make_unique<std::deque<std::string>>();
 }
 
+// store the given text into separate strings split by newlines
 void TextContainer::store(const std::string text)
 {
-    if (this->storageCounter == this->maximumCapacity) {
-        this->container->pop_front();
-        --this->storageCounter;
+    std::vector<std::string> split = split_by_char(text, '\n');
+    for (std::string s : split)
+    {
+        if (this->storageCounter == this->maximumCapacity)
+        {
+            this->container->pop_front();
+            --this->storageCounter;
+        }
+        this->container->push_back(s);
+        ++this->storageCounter;
     }
-    this->container->push_back(text);
-    ++this->storageCounter;
 }
 
 void TextContainer::removeLast()
 {
-    if (this->storageCounter > 0) {
+    if (this->storageCounter > 0)
+    {
         this->container->pop_front();
         --this->storageCounter;
     }

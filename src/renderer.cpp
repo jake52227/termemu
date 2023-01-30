@@ -89,7 +89,7 @@ Renderer::~Renderer()
     //
 }
 
-void Renderer::render(Shader &shader, Parser &parser, const std::string &text, DrawPos &drawPos)
+void Renderer::render_line(Shader &shader, Parser &parser, const std::string &text, DrawPos &drawPos)
 {
     struct AnsiCode code;
     glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -124,7 +124,7 @@ void Renderer::render(Shader &shader, Parser &parser, const std::string &text, D
     }
 }
 
-void Renderer::render_text(Shader &shader, std::string::const_iterator start, std::string::const_iterator end, DrawPos &drawPos, float scale, glm::vec3 color)
+void Renderer::render_text(Shader &shader, std::string::const_iterator start, std::string::const_iterator end, DrawPos &drawPos, float scale, glm::vec3 &color)
 {
     shader.use();
     glUniform3f(glGetUniformLocation(shader.id, "textColor"), color.x, color.y, color.z);
@@ -137,9 +137,6 @@ void Renderer::render_text(Shader &shader, std::string::const_iterator start, st
     for (auto c = start; c < end; ++c)
     {
         Character &ch = symbols[*c];
-
-        if (*c == '\n')
-            drawPos.changeRow(false);
 
         float x = drawPos.getX();
         float y = drawPos.getY();

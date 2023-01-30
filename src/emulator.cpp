@@ -78,6 +78,31 @@ void pre_render()
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
+void write_to_shell_if_ready(TextContainer &textContainer, Shell &shell)
+{
+    if (userInputBuffer.is_command_ready())
+    {
+        std::string command = userInputBuffer.get_command();
+        textContainer.store(command);
+        shell.write_to(command);
+    }
+}
+
+// draw to from starting position upward until the top of the screen is reached
+void draw_up_to_ceiling(TextContainer &tc, DrawPos &dp, Renderer &ren, Shader &sh, Parser &p)
+{
+    dp.changeRow(true);
+    auto latest_line = tc.getIteratorToLatest();
+    auto oldest_line = tc.getIteratorToOldest();
+
+    while (latest_line != oldest_line && !dp.atMaxY())
+    {
+        ren.render_line(sh, p, *latest_line, dp);
+        dp.changeRow(true);
+        ++latest_line;
+    }
+}
+
 void Emulator::start()
 {
     Shader shader = setup_shader();
@@ -87,7 +112,7 @@ void Emulator::start()
     Parser parser;
     TextContainer textContainer;
     GLFWwindow *win = getWindow();
-    DrawPos drawingPos(10.0f, getWindowHeight() - PIXEL_SIZE, getWindowWidth(), PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE);
+    DrawPos drawingPos(PIXEL_SIZE, PIXEL_SIZE, getWindowWidth(), getWindowHeight(), PIXEL_SIZE, PIXEL_SIZE);
 
     while (!glfwWindowShouldClose(win))
     {
@@ -98,27 +123,22 @@ void Emulator::start()
         setup_projection(shader);
         pre_render();
 
-        if (userInputBuffer.is_command_ready())
-        {
-            std::string command = userInputBuffer.get_command();
-            textContainer.store(command);
-            shell.write_to(command);
-        }
+        write_to_shell_if_ready(textContainer, shell); 
 
         const std::string text = shell.read_from();
 
         if (!text.empty())
-        {
             textContainer.store(text);
-            renderer.render(shader, parser, text, drawingPos);
-        }
-        else
-        {
-            const std::string buf(userInputBuffer.get_buffer());
-            renderer.render(shader, parser, buf, drawingPos);
-            drawingPos.resetX();
-        }
+        
+        const std::string buf(userInputBuffer.get_buffer());
 
+        // draw from bottom up. First the user input and on top of that the saved shell output from latest to oldest
+        renderer.render_line(shader, parser, buf, drawingPos);
+        draw_up_to_ceiling(textContainer, drawingPos, renderer, shader, parser);   
+
+        drawingPos.resetX();
+        drawingPos.resetY();
+        
         glfwSwapBuffers(win);
     }
 }

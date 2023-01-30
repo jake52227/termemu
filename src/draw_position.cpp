@@ -1,6 +1,6 @@
 #include "draw_position.hpp"
 
-DrawPos::DrawPos(float startX, float startY, float maxX, float minY, float rowGap, float colGap)
+DrawPos::DrawPos(float startX, float startY, float maxX, float maxY, float rowGap, float colGap)
 {
     this->startX = startX;
     this->startY = startY;
@@ -12,7 +12,7 @@ DrawPos::DrawPos(float startX, float startY, float maxX, float minY, float rowGa
     this->colGap = colGap;
 
     this->maxX = maxX;
-    this->minY = minY;
+    this->maxY = maxY;
 }
 
 void DrawPos::updatePos(float dx)
@@ -35,7 +35,7 @@ void DrawPos::changeRow(bool upward)
     this->currX = this->startX;
     float nextPos = upward ? this->currY + this->rowGap : this->currY - this->rowGap;
 
-    if (nextPos > this->minY)
+    if (nextPos < this->maxY)
         this->currY = nextPos;
 }
 
@@ -51,12 +51,30 @@ float DrawPos::getY()
 
 void DrawPos::resetX()
 {
-
     this->currX = this->startX;
 }
 
 void DrawPos::resetY()
 {
-
     this->currY = this->startY;
+}
+
+bool DrawPos::atMinY()
+{
+    return this->currY <= 0;
+}
+
+bool DrawPos::atMaxY()
+{
+    return this->currY >= this->maxY;
+}
+
+bool DrawPos::atMaxX()
+{
+    return this->currX >= this->maxX;
+}
+
+bool DrawPos::atMinX()
+{
+    return this->currX <= 0;
 }

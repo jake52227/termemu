@@ -11,4 +11,5 @@ sources = files('emulator.cpp',
         'parser.cpp',
 		'ansi_codes.cpp',
 		'text_container.cpp',
-		'draw_position.cpp')
+		'draw_position.cpp',
+		'utility.cpp')
