@@ -8,6 +8,11 @@ TextContainer::TextContainer(unsigned maximumCapacity)
     this->container = std::make_unique<std::deque<std::string>>();
 }
 
+void TextContainer::clearStorage()
+{
+    this->container->clear();
+}
+
 // store the given text into separate strings split by newlines
 void TextContainer::store(const std::string text)
 {

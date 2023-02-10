@@ -83,8 +83,16 @@ void write_to_shell_if_ready(TextContainer &textContainer, Shell &shell)
     if (userInputBuffer.is_command_ready())
     {
         std::string command = userInputBuffer.get_command();
-        textContainer.store(command);
-        shell.write_to(command);
+
+        if (command.compare("clear") == 0)
+        {
+            textContainer.clearStorage();
+        }
+        else
+        {
+            textContainer.store(command);
+            shell.write_to(command);
+        }
     }
 }
 
@@ -112,7 +120,7 @@ void Emulator::start()
     Parser parser;
     TextContainer textContainer;
     GLFWwindow *win = getWindow();
-    DrawPos drawingPos(PIXEL_SIZE, PIXEL_SIZE, getWindowWidth(), getWindowHeight(), PIXEL_SIZE, PIXEL_SIZE);
+    DrawPos drawingPos(PIXEL_SIZE, PIXEL_SIZE, getWindowWidth(), getWindowHeight(), PIXEL_SIZE, PIXEL_SIZE, true);
 
     while (!glfwWindowShouldClose(win))
     {
@@ -128,17 +136,18 @@ void Emulator::start()
         const std::string text = shell.read_from();
 
         if (!text.empty())
+        {
             textContainer.store(text);
-        
-        const std::string buf(userInputBuffer.get_buffer());
+        }
+        else
+        {
+            const std::string buf(userInputBuffer.get_buffer());
+            renderer.render_line(shader, parser, buf, drawingPos);
+        }
 
-        // draw from bottom up. First the user input and on top of that the saved shell output from latest to oldest
-        renderer.render_line(shader, parser, buf, drawingPos);
         draw_up_to_ceiling(textContainer, drawingPos, renderer, shader, parser);   
-
         drawingPos.resetX();
         drawingPos.resetY();
-        
         glfwSwapBuffers(win);
     }
 }

@@ -124,7 +124,7 @@ void Renderer::render_line(Shader &shader, Parser &parser, const std::string &te
     }
 }
 
-void Renderer::render_text(Shader &shader, std::string::const_iterator start, std::string::const_iterator end, DrawPos &drawPos, float scale, glm::vec3 &color)
+void Renderer::render_text(Shader &shader, const std::string::const_iterator start, const std::string::const_iterator end, DrawPos &drawPos, float scale, glm::vec3 &color)
 {
     shader.use();
     glUniform3f(glGetUniformLocation(shader.id, "textColor"), color.x, color.y, color.z);

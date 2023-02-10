@@ -4,7 +4,7 @@
 class DrawPos
 {
 public:
-    DrawPos(float startX, float startY, float maxX, float maxY, float rowGap, float colGap);
+    DrawPos(float startX, float startY, float maxX, float maxY, float rowGap, float colGap, bool drawUpward);
     float getX();
     float getY();
     void changeRow(bool upward);
@@ -16,6 +16,7 @@ public:
     bool atMaxX();
     bool atMinX();
 private:
+    bool drawpUpward; // determines if the next row is over or under the previous row
     float rowGap, colGap;
     float startX, startY, maxX, maxY;
     float currX, currY;

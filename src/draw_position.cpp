@@ -1,6 +1,6 @@
 #include "draw_position.hpp"
 
-DrawPos::DrawPos(float startX, float startY, float maxX, float maxY, float rowGap, float colGap)
+DrawPos::DrawPos(float startX, float startY, float maxX, float maxY, float rowGap, float colGap, bool drawUpward)
 {
     this->startX = startX;
     this->startY = startY;
@@ -13,6 +13,8 @@ DrawPos::DrawPos(float startX, float startY, float maxX, float maxY, float rowGa
 
     this->maxX = maxX;
     this->maxY = maxY;
+
+    this->drawpUpward = drawpUpward;
 }
 
 void DrawPos::updatePos(float dx)
@@ -22,7 +24,7 @@ void DrawPos::updatePos(float dx)
     float rightPos = this->currX + dx;
     if (rightPos >= this->maxX)
     {
-        this->changeRow(false);
+        this->changeRow(this->drawpUpward);
     }
     else
     {

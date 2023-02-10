@@ -34,7 +34,7 @@ public:
     void render_line(Shader &shader, Parser &parser, const std::string &text, DrawPos &drawPos);
 
 private:
-    void render_text(Shader &shader, std::string::const_iterator start, std::string::const_iterator end, DrawPos &drawPos, float scale, glm::vec3 &color);
+    void render_text(Shader &shader, const std::string::const_iterator start, const std::string::const_iterator end, DrawPos &drawPos, float scale, glm::vec3 &color);
     unsigned vao;
     unsigned vbo;
     void load_chars(const char *font_path);

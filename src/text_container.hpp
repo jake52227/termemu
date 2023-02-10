@@ -13,6 +13,7 @@ public:
     void store(const std::string text);
     void removeLast();
     unsigned getCount();
+    void clearStorage();
     std::deque<std::string>::reverse_iterator getIteratorToLatest();
     std::deque<std::string>::reverse_iterator getIteratorToOldest();
 private:
