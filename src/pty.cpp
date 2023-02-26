@@ -1,13 +1,11 @@
 #include <pty.h>
 #include <cstdlib>
-#include <iostream>
 #include <signal.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <termios.h>
 #include "pty.hpp"
 #include "macros.hpp"
-#include "window.hpp"
 
 static void at_exit(int status, void *arg)
 {

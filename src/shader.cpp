@@ -5,6 +5,23 @@
 #include <glad/glad.h>
 #include "shader.hpp"
 
+
+void Shader::set_text_color(const glm::vec3 &color)
+{
+    this->use();
+    glUniform3f(glGetUniformLocation(this->id, "textColor"), color.x, color.y, color.z);
+}
+
+std::unique_ptr<Shader> Shader::create(const char *vertex_shader_path, const char *fragment_shader_path)
+{
+    std::unique_ptr<Shader> shader = std::make_unique<Shader>(Shader());
+    shader->compile(vertex_shader_path, fragment_shader_path);
+    shader->use();
+    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(Window::getWindowWidth()), 0.0f, static_cast<float>(Window::getWindowHeight()));
+    glUniformMatrix4fv(glGetUniformLocation(shader->id, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+    return shader;
+}
+
 std::string read_file_content(const char *path)
 {
     std::ifstream t(path);

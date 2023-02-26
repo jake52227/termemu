@@ -6,10 +6,18 @@
 
 #define PIXEL_SIZE 16 // used by freetype
 
-unsigned getWindowHeight();
-unsigned getWindowWidth();
-GLFWwindow *getWindow();
-void make_window(unsigned width, unsigned height, const char *title);
-void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+class Window
+{
+public:
+    static void initialize(unsigned width, unsigned height, const char *title);
+    static unsigned getWindowHeight();
+    static GLFWwindow *getWindow();
+    static unsigned getWindowWidth();
+private:
+    static unsigned windowHeight;
+    static unsigned windowWidth;
+    static GLFWwindow *win;
+    static void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+};
 
 #endif

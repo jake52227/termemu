@@ -9,13 +9,13 @@
 class TextContainer
 {
 public:
-    TextContainer(unsigned maximumCapacity = 200);
+    static std::unique_ptr<TextContainer> create(unsigned maximumCapacity = 200);
     void store(const std::string text);
     void removeLast();
     unsigned getCount();
     void clearStorage();
-    std::deque<std::string>::reverse_iterator getIteratorToLatest();
-    std::deque<std::string>::reverse_iterator getIteratorToOldest();
+    std::deque<std::string>::iterator getIteratorToLatest();
+    std::deque<std::string>::iterator getIteratorToOldest();
 private:
     unsigned storageCounter;
     unsigned maximumCapacity;

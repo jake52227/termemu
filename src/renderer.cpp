@@ -6,6 +6,18 @@
 #include "window.hpp"
 #include "macros.hpp"
 
+void Renderer::clear_screen()
+{
+    glfwPollEvents();
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
+void Renderer::clear_rectangle(float y, float x, float scale)
+{
+    // TODO: Starting from point (x,y), write transparent spaces to clear the line
+}
+
 void Renderer::load_chars(const char *font_path)
 {
     FT_Library ft;
@@ -76,12 +88,14 @@ void Renderer::configure_vao()
     glBindVertexArray(0);
 }
 
-Renderer::Renderer(Config &cfg)
+std::unique_ptr<Renderer> Renderer::create(Config &cfg)
 {
+    std::unique_ptr<Renderer> ren = std::make_unique<Renderer>(Renderer());
     std::string font_path = cfg.get_font_path();
     const char *fp = font_path.c_str();
-    this->load_chars(fp);
-    this->configure_vao();
+    ren->load_chars(fp);
+    ren->configure_vao();
+    return ren;
 }
 
 Renderer::~Renderer()
@@ -89,80 +103,41 @@ Renderer::~Renderer()
     //
 }
 
-void Renderer::render_line(Shader &shader, Parser &parser, const std::string &text, DrawPos &drawPos)
+void Renderer::render_char(Character &ch, float x, float y, float scale)
 {
-    struct AnsiCode code;
-    glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
+    float xpos = x + ch.Bearing.x * scale;
+    float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
 
-    auto it = text.cbegin();
-    const auto end = text.cend();
+    float w = ch.Size.x * scale;
+    float h = ch.Size.y * scale;
 
-    // Iterate the text. Find Ansi codes and extract them to the struct. Modify the rendering style based on this
-    while (it < end)
-    {
-        if (*it == '\x1b')
-        {
-            parser.parseCode(code, it, end);
-            it += code.length;
-            color = get_color_as_vec(code.fgColor);
-            // TODO update text style (bold, italic etc)
-        }
-        // find end position for this segment of text: either until next escape code or the end
-        std::string::const_iterator pos(it);
-        while (pos < end && *pos != '\x1b')
-            ++pos;
+    float vertices[6][4] = {
+        {xpos, ypos + h, 0.0f, 0.0f},
+        {xpos, ypos, 0.0f, 1.0f},
+        {xpos + w, ypos, 1.0f, 1.0f},
 
-        if (it < pos)
-        {
-            this->render_text(shader, it, pos, drawPos, 1, color);
-            it = pos;
-        }
-        else
-        {
-            ++it;
-        }
-    }
+        {xpos, ypos + h, 0.0f, 0.0f},
+        {xpos + w, ypos, 1.0f, 1.0f},
+        {xpos + w, ypos + h, 1.0f, 0.0f}
+    };
+
+    glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+    glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void Renderer::render_text(Shader &shader, const std::string::const_iterator start, const std::string::const_iterator end, DrawPos &drawPos, float scale, glm::vec3 &color)
+void Renderer::render_text(const std::string &text, float x, float y, float scale)
 {
-    shader.use();
-    glUniform3f(glGetUniformLocation(shader.id, "textColor"), color.x, color.y, color.z);
     glActiveTexture(GL_TEXTURE0);
-    glBindVertexArray(vao);
+    glBindVertexArray(this->vao);
 
-    // TODO: buffer the renderings and do only a single rendering at the end
-
-    // iterate through all characters
-    for (auto c = start; c < end; ++c)
+    for (const char &c : text)
     {
-        Character &ch = symbols[*c];
-
-        float x = drawPos.getX();
-        float y = drawPos.getY();
-        drawPos.updatePos((ch.Advance >> 6) * scale);
-
-        float xpos = x + ch.Bearing.x * scale;
-        float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
-
-        float w = ch.Size.x * scale;
-        float h = ch.Size.y * scale;
-
-        float vertices[6][4] = {
-            {xpos, ypos + h, 0.0f, 0.0f},
-            {xpos, ypos, 0.0f, 1.0f},
-            {xpos + w, ypos, 1.0f, 1.0f},
-
-            {xpos, ypos + h, 0.0f, 0.0f},
-            {xpos + w, ypos, 1.0f, 1.0f},
-            {xpos + w, ypos + h, 1.0f, 0.0f}
-        };
-
-        glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-        glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        Character &ch = symbols[c];
+        render_char(ch, x, y, scale);
+        x += (ch.Advance >> 6) * scale;
     }
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);

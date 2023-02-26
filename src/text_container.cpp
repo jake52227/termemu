@@ -1,39 +1,33 @@
 #include "text_container.hpp"
 #include "utility.hpp"
 
-TextContainer::TextContainer(unsigned maximumCapacity)
+
+std::unique_ptr<TextContainer> TextContainer::create(unsigned maximumCapacity)
 {
-    this->storageCounter = 0;
-    this->maximumCapacity = maximumCapacity;
-    this->container = std::make_unique<std::deque<std::string>>();
+    std::unique_ptr<TextContainer> textContainer = std::make_unique<TextContainer>(TextContainer());
+    textContainer->storageCounter = 0;
+    textContainer->maximumCapacity = maximumCapacity;
+    textContainer->container = std::make_unique<std::deque<std::string>>();
+    return textContainer;
 }
+
 
 void TextContainer::clearStorage()
 {
     this->container->clear();
 }
 
-// store the given text into separate strings split by newlines
+// store the string in front of the deque.
 void TextContainer::store(const std::string text)
 {
-    std::vector<std::string> split = split_by_char(text, '\n');
-    for (std::string s : split)
-    {
-        if (this->storageCounter == this->maximumCapacity)
-        {
-            this->container->pop_front();
-            --this->storageCounter;
-        }
-        this->container->push_back(s);
-        ++this->storageCounter;
-    }
+    this->container->push_front(text);
 }
 
 void TextContainer::removeLast()
 {
     if (this->storageCounter > 0)
     {
-        this->container->pop_front();
+        this->container->pop_back();
         --this->storageCounter;
     }
 }
@@ -43,12 +37,12 @@ unsigned TextContainer::getCount()
     return this->storageCounter;
 }
 
-std::deque<std::string>::reverse_iterator TextContainer::getIteratorToLatest()
+std::deque<std::string>::iterator TextContainer::getIteratorToLatest()
 {
-    return this->container->rbegin();
+    return this->container->begin();
 }
 
-std::deque<std::string>::reverse_iterator TextContainer::getIteratorToOldest()
+std::deque<std::string>::iterator TextContainer::getIteratorToOldest()
 {
-    return this->container->rend();
+    return this->container->end();
 }

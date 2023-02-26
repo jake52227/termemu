@@ -9,7 +9,5 @@ sources = files('emulator.cpp',
 		'window.cpp',
 		'config.cpp',
         'parser.cpp',
-		'ansi_codes.cpp',
 		'text_container.cpp',
-		'draw_position.cpp',
 		'utility.cpp')

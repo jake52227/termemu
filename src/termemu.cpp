@@ -2,7 +2,7 @@
 
 int main(void)
 {
-    Emulator emulator(800, 800, "hello world");
-    emulator.start();
+    std::unique_ptr<Emulator> emulator = Emulator::make(800, 800, "hello world");
+    emulator->start();
     return 0;
 }

@@ -11,12 +11,11 @@
 #include <glm/glm.hpp>
 #include <ft2build.h>
 #include <vector>
+#include <memory>
 #include FT_FREETYPE_H
 
 #include "shader.hpp"
 #include "config.hpp"
-#include "parser.hpp"
-#include "draw_position.hpp"
 
 struct Character
 {
@@ -29,16 +28,17 @@ struct Character
 class Renderer
 {
 public:
-    Renderer(Config &cfg);
+    static std::unique_ptr<Renderer> create(Config &cfg);
     ~Renderer();
-    void render_line(Shader &shader, Parser &parser, const std::string &text, DrawPos &drawPos);
-
+    void render_text(const std::string &text, float x, float y, float scale);
+    void clear_screen();
+    void clear_rectangle(float y, float x, float scale);
 private:
-    void render_text(Shader &shader, const std::string::const_iterator start, const std::string::const_iterator end, DrawPos &drawPos, float scale, glm::vec3 &color);
     unsigned vao;
     unsigned vbo;
     void load_chars(const char *font_path);
     void configure_vao();
+    void render_char(Character &ch, float x, float y, float scale);
     std::unordered_map<GLchar, Character> symbols;
 };
 

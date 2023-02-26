@@ -5,24 +5,27 @@
 #include <GLFW/glfw3.h>
 
 #include <string>
+#include <memory>
 #include "renderer.hpp"
 
+// heavy use of static methods due to callback functions 
 class UserInput
 {
 public:
-    UserInput();
-    char *get_buffer();
-    void erase_symbol();
-    void write_symbol(char sym);
-    void prepare_command();
-    bool is_command_ready();
-    std::string get_command();
-    // TODO: add text cursor movement
+    static void initialize();
+    static char *get_buffer();
+    static void erase_symbol();
+    static void write_symbol(char sym);
+    static void prepare_command();
+    static bool is_command_ready();
+    static std::string get_command();
 private:
-    char buf[1024];
-    bool command_ready {};
-    std::string command {};
-    unsigned int buf_index{0};
+    static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+    static void char_callback(GLFWwindow *window, unsigned codepoint);
+    static char buf[1024];
+    static bool command_ready;
+    static std::string command;
+    static unsigned int buf_index;
 };
 
 #endif

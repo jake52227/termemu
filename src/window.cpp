@@ -3,38 +3,38 @@
 #include "window.hpp"
 #include "macros.hpp"
 
-// TODO: perhaps not the best solution to have these here?
-static GLFWwindow *WINDOW;
-static unsigned WINDOW_HEIGHT;
-static unsigned WINDOW_WIDTH;
+unsigned Window::windowHeight;
+unsigned Window::windowWidth;
+GLFWwindow *Window::win;
 
-unsigned getWindowHeight()
+unsigned Window::getWindowHeight()
 {
-	return WINDOW_HEIGHT;
+	return Window::windowHeight;
 }
-unsigned getWindowWidth()
+unsigned Window::getWindowWidth()
 {
-	return WINDOW_HEIGHT;
-}
-
-GLFWwindow *getWindow()
-{
-	return WINDOW;
+	return Window::windowWidth;
 }
 
-void make_window(unsigned width, unsigned height, const char *title)
+GLFWwindow *Window::getWindow()
 {
+	return Window::win;
+}
+
+void Window::initialize(unsigned width, unsigned height, const char *title)
+{
+	Window::win = nullptr;
 	glfwInit();
-	WINDOW_WIDTH = width;
-	WINDOW_HEIGHT = height;
-	WINDOW = glfwCreateWindow(width, height, title, nullptr, nullptr);
-	if (WINDOW == nullptr)
+	Window::windowWidth = width;
+	Window::windowHeight = height;
+	Window::win = glfwCreateWindow(width, height, title, nullptr, nullptr);
+	if (Window::win  == nullptr)
 	{
 		glfwTerminate();
 		errExit("window creation failed");
 	}
 
-	glfwMakeContextCurrent(WINDOW);
+	glfwMakeContextCurrent(Window::win);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		errExit("failed to load function pointers with GLAD");
@@ -44,12 +44,12 @@ void make_window(unsigned width, unsigned height, const char *title)
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glfwSetFramebufferSizeCallback(WINDOW, framebuffer_size_callback);
+	glfwSetFramebufferSizeCallback(Window::win, Window::framebuffer_size_callback);
 }
 
-void framebuffer_size_callback(GLFWwindow *window, int width, int height)
+void Window::framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
-	WINDOW_WIDTH = width;
-	WINDOW_HEIGHT = height;
+	Window::windowWidth = width;
+	Window::windowHeight = height;
 	glViewport(0, 0, width, height);
 }

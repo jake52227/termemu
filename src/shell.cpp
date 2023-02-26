@@ -4,9 +4,12 @@
 #include "shell.hpp"
 #include "pty.hpp"
 
-Shell::Shell()
+
+std::unique_ptr<Shell> Shell::create()
 {
-    fork_pty_shell(&(this->pty_primary), &(this->shell_proc));
+    std::unique_ptr<Shell> shell = std::make_unique<Shell>(Shell());
+    fork_pty_shell(&(shell->pty_primary), &(shell->shell_proc));
+    return shell;
 }
 
 Shell::~Shell()
@@ -39,9 +42,8 @@ std::string Shell::read_from()
     {
         0, 0
     };
-    // TODO: not safe to assume size of buffer -> change this to dynamic allocation
     char buf[4096];
-    bzero(buf, sizeof buf);
+    bzero(buf, sizeof(buf));
     ssize_t size;
     size_t count = 0;
 
@@ -58,7 +60,6 @@ std::string Shell::read_from()
         buf[0] = '\0';
     }
 
-    Parser psr;
     std::string out = std::string(buf);
 
     return out;
